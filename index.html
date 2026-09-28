@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<meta name="theme-color" content="#12091f" />
+<title>الأميرة رورو — حكاية القصر الملكية</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#09050f;--panel:rgba(20,12,34,.78);--panel2:rgba(42,18,51,.88);
+  --gold:#ffd778;--gold2:#e4a83f;--rose:#ef4b87;--rose2:#9f2452;--blue:#66bfff;
+  --text:#fff8fb;--muted:#cfc0d8;--danger:#ff4b62;
+}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:Tahoma,"Segoe UI",Arial,sans-serif;color:var(--text)}
+body{touch-action:none;overscroll-behavior:none;user-select:none}
+button{font:inherit}
+#app{position:fixed;inset:0;overflow:hidden;background:
+ radial-gradient(circle at 20% 0%,rgba(225,62,122,.18),transparent 31%),
+ radial-gradient(circle at 80% 10%,rgba(116,78,199,.18),transparent 30%),
+ linear-gradient(180deg,#170b28,#09050f 70%)}
+#mobileBrand,#mobileFooter{display:none}
+#stageWrap{position:absolute;inset:0;display:grid;place-items:center}
+#gameShell{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#09060e}
+canvas{display:block;width:100%;height:100%}
+.glass{background:linear-gradient(180deg,rgba(34,19,49,.83),rgba(15,9,26,.80));border:1px solid rgba(255,255,255,.12);box-shadow:0 16px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.07);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+#hud{position:absolute;inset:0;pointer-events:none;z-index:10}
+#topbar{position:absolute;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.panel{border-radius:18px;padding:10px 12px}
+#heroCard{width:min(360px,48vw)}
+#heroRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+#heroName{font-weight:800;font-size:14px;white-space:nowrap}
+#score{font-size:12px;color:var(--gold);font-weight:800;white-space:nowrap}
+.bar{height:11px;border-radius:999px;background:#2a1b38;border:1px solid rgba(255,255,255,.09);overflow:hidden;position:relative}
+.bar+.bar{margin-top:5px;height:7px}
+.fill{height:100%;width:100%;transition:width .12s linear}
+#hpFill{background:linear-gradient(90deg,#ff3e72,#ff85a8)}
+#allyFill{background:linear-gradient(90deg,#4db3ff,#9bd7ff)}
+#staminaFill{background:linear-gradient(90deg,#ffd05c,#f09c38)}
+.statusLine{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:6px;margin-top:4px}
+.statusLine:first-of-type{margin-top:0}
+.statusLabel{font-size:9px;color:#e9dff0;opacity:.86;white-space:nowrap}
+.statusLine.energy .bar{height:4px;opacity:.9}
+#chapterBox{min-width:165px;text-align:center;font-size:13px;font-weight:800;color:#fff3c8}
+#combo{position:absolute;top:86px;right:18px;font-size:24px;font-weight:900;color:#ffe4a1;text-shadow:0 3px 18px rgba(255,171,65,.45);opacity:0;transform:scale(.8);transition:.18s}
+#toast{position:absolute;top:92px;left:50%;transform:translateX(-50%) translateY(-8px);padding:8px 14px;border-radius:999px;font-size:12px;opacity:0;transition:.22s;white-space:nowrap}
+#bossBarWrap{position:absolute;top:74px;left:50%;transform:translateX(-50%);width:min(520px,60vw);display:none;text-align:center}
+#bossTitle{font-size:11px;color:#ffd1dc;margin-bottom:4px;font-weight:800}
+#bossBar{height:10px;background:#2a1018;border:1px solid rgba(255,255,255,.12);border-radius:999px;overflow:hidden}
+#bossFill{height:100%;width:100%;background:linear-gradient(90deg,#b90e38,#ff4e67)}
+#dialogue{position:absolute;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(900px,94vw);z-index:30;display:none;padding:16px 18px;border-radius:22px;cursor:pointer}
+#speaker{font-size:14px;color:var(--gold);font-weight:900;margin-bottom:5px}
+#line{font-size:clamp(15px,2vw,20px);line-height:1.75;min-height:50px}
+#continue{font-size:11px;opacity:.58;text-align:left;margin-top:4px}
+#overlay{position:absolute;inset:0;display:grid;place-items:center;z-index:40;background:linear-gradient(rgba(9,5,17,.42),rgba(9,5,17,.82));padding:20px}
+#menuCard{width:min(780px,94vw);text-align:center;border-radius:30px;padding:clamp(22px,4vw,42px);position:relative;overflow:hidden}
+#menuCard:before{content:"";position:absolute;width:310px;height:310px;border-radius:50%;background:radial-gradient(circle,rgba(238,77,135,.20),transparent 68%);top:-160px;right:-100px}
+#menuCard:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,212,112,.12),transparent 68%);bottom:-190px;left:-120px}
+.crown{font-size:54px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));position:relative;z-index:1}
+h1{position:relative;z-index:1;font-size:clamp(38px,7vw,78px);line-height:1;margin:8px 0 8px;text-shadow:0 7px 30px rgba(239,75,135,.28)}
+h1 .gold{color:var(--gold)}
+.lead{position:relative;z-index:1;max-width:640px;margin:0 auto;color:#e9dff0;line-height:1.9;font-size:clamp(13px,1.7vw,17px)}
+.instructions{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px auto 8px;max-width:610px;text-align:right}
+.tip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:11px 12px;border-radius:15px;font-size:12px;color:#d8cadf;line-height:1.6}
+.tip b{color:#ffe08e}
+.mainBtn{position:relative;z-index:1;margin-top:14px;border:0;border-radius:18px;padding:14px 30px;min-width:190px;font-weight:900;font-size:16px;color:#2a1231;background:linear-gradient(#fff0b9,#efb84d);box-shadow:0 14px 32px rgba(0,0,0,.34),inset 0 1px 0 #fff;cursor:pointer;transition:.15s}
+.mainBtn:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.mainBtn:active{transform:translateY(1px) scale(.98)}
+#credits{position:relative;z-index:1;font-size:11px;opacity:.46;margin-top:11px}
+#touchUI{position:absolute;inset:0;z-index:25;display:none;pointer-events:none}
+#joystick{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));width:142px;height:142px;border-radius:50%;background:radial-gradient(circle at 45% 40%,rgba(255,255,255,.13),rgba(255,255,255,.04) 55%,rgba(0,0,0,.14));border:1px solid rgba(255,255,255,.12);box-shadow:0 12px 28px rgba(0,0,0,.28),inset 0 0 25px rgba(255,255,255,.04);pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:50%;top:50%;width:60px;height:60px;border-radius:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#51405f,#201827);border:1px solid rgba(255,255,255,.14);box-shadow:0 8px 15px rgba(0,0,0,.3),inset 0 2px 2px rgba(255,255,255,.08)}
+#actionPad{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(24px,env(safe-area-inset-bottom));width:170px;height:145px;pointer-events:none}
+.touchBtn{position:absolute;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:white;font-weight:900;box-shadow:0 11px 20px rgba(0,0,0,.33),inset 0 2px 2px rgba(255,255,255,.13);pointer-events:auto;touch-action:none}
+#attackBtn{right:0;bottom:0;width:82px;height:82px;background:linear-gradient(145deg,#f05189,#8d1b49);font-size:13px}
+#dashBtn{left:15px;top:3px;width:64px;height:64px;background:linear-gradient(145deg,#6577de,#2c347a);font-size:10px}
+#specialBtn{right:1px;top:0;width:57px;height:57px;background:linear-gradient(145deg,#e5b858,#8e5e1c);font-size:9px}
+.touchBtn:active{transform:scale(.94);filter:brightness(1.15)}
+#rotateHint{display:none;position:absolute;inset:0;z-index:100;background:#0b0711;place-items:center;text-align:center;padding:24px}
+#rotateHint div{font-size:16px;line-height:1.9;color:#e9dff0}
+#rotateHint b{display:block;font-size:38px;margin-bottom:8px}
+@media (pointer:coarse),(max-width:900px){
+  html,body{background:#120d1d}
+  #app{
+    padding:max(9px,env(safe-area-inset-top)) max(9px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left));
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;
+    background:radial-gradient(circle at 30% 0%,rgba(226,75,129,.15),transparent 34%),linear-gradient(160deg,#332548,#171021 55%,#0c0912)
+  }
+  #app:before{content:"";position:absolute;inset:5px;border:1px solid rgba(255,255,255,.055);border-radius:28px;pointer-events:none}
+  #mobileBrand{display:flex;align-items:center;justify-content:space-between;width:min(96vw,720px);padding:0 7px;flex:none;font-size:10px;letter-spacing:1.5px;color:#d8cadf;opacity:.88;direction:ltr}
+  #mobileBrand b{color:#ffd680;font-size:13px;letter-spacing:.5px}
+  #stageWrap{position:relative;inset:auto;display:block;width:min(96vw,720px);flex:none}
+  #gameShell{position:relative;width:100%;height:auto;aspect-ratio:16/9;overflow:hidden;border:clamp(7px,2.2vw,12px) solid #0c0912;border-radius:clamp(17px,4vw,27px);box-shadow:0 18px 42px rgba(0,0,0,.48),0 0 0 2px rgba(255,255,255,.055),inset 0 0 0 1px rgba(255,255,255,.05);background:#08060d}
+  #gameShell:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:12;box-shadow:inset 0 0 28px rgba(0,0,0,.34);border-radius:10px}
+  #topbar{top:5px;left:6px;right:6px;gap:5px}
+  .panel{padding:4px 6px;border-radius:9px}
+  #heroCard{width:min(235px,45%)}
+  #heroRow{margin-bottom:2px}
+  #heroName{font-size:8px}#score{font-size:7px}
+  .statusLine{grid-template-columns:28px minmax(0,1fr);gap:4px;margin-top:2px}
+  .statusLabel{font-size:6.8px}
+  .statusLine .bar{height:5px}.statusLine.energy .bar{height:3px}
+  #chapterBox{min-width:auto;font-size:8px;padding:5px 7px}
+  #combo{top:46px;right:9px;font-size:15px}
+  #toast{top:43px;font-size:7px;padding:4px 7px}
+  #bossBarWrap{top:41px;width:min(320px,50vw)}#bossTitle{font-size:7px;margin-bottom:2px}#bossBar{height:5px}
+  #dialogue{position:relative;left:auto;bottom:auto;transform:none;flex:none;width:min(96vw,720px);max-height:82px;overflow:hidden;padding:8px 11px;border-radius:12px;z-index:30;background:linear-gradient(180deg,rgba(28,19,43,.97),rgba(15,10,25,.97));border-color:rgba(255,215,125,.18);box-shadow:0 8px 20px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06)}
+  #speaker{font-size:10px;margin-bottom:2px}#line{font-size:10px;line-height:1.4;min-height:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}#continue{font-size:7px;margin-top:2px}
+  #touchUI{position:relative;inset:auto;display:block;flex:1;width:min(96vw,720px);min-height:178px;max-height:245px;z-index:25;pointer-events:none}
+  #joystick{width:120px;height:120px;left:12px;top:50%;bottom:auto;transform:translateY(-50%)}
+  #stick{width:52px;height:52px}
+  #actionPad{right:10px;top:50%;bottom:auto;transform:translateY(-50%) scale(.9);transform-origin:right center}
+  #mobileFooter{display:flex;width:min(96vw,720px);justify-content:center;gap:30px;flex:none;color:#776c80;font-size:8px;letter-spacing:1.2px;margin-top:-4px;direction:ltr}
+  #menuCard{padding:10px 12px;border-radius:14px;width:94%}.crown{font-size:28px}h1{font-size:clamp(22px,6vw,38px);margin:3px 0}.lead{font-size:8.5px;line-height:1.45}.instructions{grid-template-columns:1fr 1fr;gap:5px;margin:7px auto 3px}.tip{font-size:7px;padding:5px 7px}.mainBtn{font-size:10px;padding:7px 15px;min-width:135px;margin-top:6px}#credits{font-size:7px;margin-top:5px}
+}
+@media (pointer:coarse) and (orientation:portrait){
+  #app{justify-content:flex-start}
+  #touchUI{min-height:180px;max-height:250px}
+}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:600px){
+  #app{gap:3px;padding-top:max(4px,env(safe-area-inset-top));padding-bottom:max(4px,env(safe-area-inset-bottom))}
+  #mobileBrand{width:min(56vw,720px);font-size:7px;height:13px}#mobileBrand b{font-size:9px}
+  #stageWrap{width:min(56vw,720px)}
+  #gameShell{border-width:6px;border-radius:17px}
+  #dialogue{width:min(56vw,720px);max-height:48px;padding:4px 7px;border-radius:8px}
+  #dialogue #speaker{font-size:7px}#dialogue #line{font-size:7px;line-height:1.22}#dialogue #continue{font-size:5px;margin-top:0}
+  #touchUI{position:fixed;inset:0;width:auto;min-height:0;max-height:none;display:block;pointer-events:none;z-index:25}
+  #joystick{width:100px;height:100px;left:max(7px,env(safe-area-inset-left));top:50%;transform:translateY(-50%)}#stick{width:44px;height:44px}
+  #actionPad{right:max(4px,env(safe-area-inset-right));top:50%;transform:translateY(-50%) scale(.73);transform-origin:right center}
+  #mobileFooter{width:min(56vw,720px);font-size:5px;margin:0;height:8px}
+  #menuCard{max-height:92%;overflow:auto;padding:8px 11px}.crown{font-size:23px}h1{font-size:26px}.lead{font-size:7px;line-height:1.35}.instructions{margin:5px auto 1px}.tip{font-size:6px;padding:4px 5px}.mainBtn{margin-top:4px;padding:6px 13px}
+}
+@media (max-width:430px){
+  #joystick{width:108px;height:108px}
+  #actionPad{transform:translateY(-50%) scale(.8);right:5px}
+  .instructions{display:none}.lead{margin-top:4px}
+  #heroCard{width:48%}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="mobileBrand"><span>ROYAL POCKET</span><b>RORO × RAKAN</b><span>⚔︎</span></div>
+  <div id="stageWrap">
+    <div id="gameShell">
+      <canvas id="game"></canvas>
+      <div id="hud">
+        <div id="topbar">
+          <div id="heroCard" class="glass panel">
+            <div id="heroRow"><div id="heroName">👑 الأميرة رورو</div><div id="score">0 ✦</div></div>
+            <div class="statusLine"><span class="statusLabel">رورو</span><div class="bar"><div id="hpFill" class="fill"></div></div></div>
+            <div class="statusLine"><span class="statusLabel">راكان</span><div class="bar"><div id="allyFill" class="fill"></div></div></div>
+            <div class="statusLine energy"><span class="statusLabel">طاقة</span><div class="bar"><div id="staminaFill" class="fill"></div></div></div>
+          </div>
+          <div id="chapterBox" class="glass panel">الفصل الأول</div>
+        </div>
+        <div id="combo">×2 COMBO</div>
+        <div id="toast" class="glass">جاهزة؟</div>
+        <div id="bossBarWrap">
+          <div id="bossTitle">قائد الغزاة</div><div id="bossBar"><div id="bossFill"></div></div>
+        </div>
+      </div>
+      <div id="overlay">
+        <div id="menuCard" class="glass">
+          <div class="crown">👑🌹⚔️</div>
+          <h1>الأميرة <span class="gold">رورو</span></h1>
+          <div class="lead">القصر الملكي يتعرض لهجوم مفاجئ. قاتلي بجانب الفارس راكان، اهزمي الغزاة، وواجهي قائدهم في المعركة الأخيرة.</div>
+          <div class="instructions">
+            <div class="tip"><b>الكمبيوتر:</b> الحركة WASD أو الأسهم — الضربة Space — الاندفاع Shift — الضربة الملكية E</div>
+            <div class="tip"><b>الجوال:</b> عصا حركة يسار الشاشة — أزرار القتال يمين الشاشة — الواجهة تتكيف تلقائيًا</div>
+          </div>
+          <button class="mainBtn" id="startBtn">ابدأ المغامرة</button>
+          <div id="credits">ROYAL POCKET — RORO × RAKAN</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="dialogue" class="glass"><div id="speaker"></div><div id="line"></div><div id="continue">اضغط للمتابعة</div></div>
+  <div id="touchUI">
+    <div id="joystick"><div id="stick"></div></div>
+    <div id="actionPad">
+      <button id="dashBtn" class="touchBtn">اندفاع</button>
+      <button id="specialBtn" class="touchBtn">ضربة ملكية</button>
+      <button id="attackBtn" class="touchBtn">ضربة</button>
+    </div>
+  </div>
+  <div id="mobileFooter"><span>SELECT ✦</span><span>START ✦</span></div>
+</div>
+<script>
+(()=>{
+"use strict";
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d",{alpha:false});
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r=0){const q=Math.min(Math.abs(Array.isArray(r)?r[0]:r),Math.abs(w)/2,Math.abs(h)/2);this.moveTo(x+q,y);this.lineTo(x+w-q,y);this.quadraticCurveTo(x+w,y,x+w,y+q);this.lineTo(x+w,y+h-q);this.quadraticCurveTo(x+w,y+h,x+w-q,y+h);this.lineTo(x+q,y+h);this.quadraticCurveTo(x,y+h,x,y+h-q);this.lineTo(x,y+q);this.quadraticCurveTo(x,y,x+q,y);this.closePath();return this}}
+const overlay=document.getElementById("overlay"),menuCard=document.getElementById("menuCard"),startBtn=document.getElementById("startBtn");
+const hpFill=document.getElementById("hpFill"),allyFill=document.getElementById("allyFill"),staminaFill=document.getElementById("staminaFill"),scoreEl=document.getElementById("score"),chapterBox=document.getElementById("chapterBox"),comboEl=document.getElementById("combo"),toast=document.getElementById("toast"),bossWrap=document.getElementById("bossBarWrap"),bossFill=document.getElementById("bossFill");
+const dialogue=document.getElementById("dialogue"),speaker=document.getElementById("speaker"),line=document.getElementById("line");
+const LOGICAL_W=1280,LOGICAL_H=720,world={w:2600,floorTop:382,floorBottom:646};
+let DPR=1,last=0,time=0,state="menu",camera={x:0},shake=0,flash=0,freeze=0,audioCtx=null;
+let entities=[],particles=[],slashes=[],petals=[],pickups=[],keys={},rose=null,rakan=null,wave=0,score=0,combo=0,comboTimer=0,dialogueQueue=[],onDialogueDone=null,dialogueLocked=false;
+const touch={x:0,y:0,active:false};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),rand=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function resize(){DPR=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(LOGICAL_W*DPR);canvas.height=Math.round(LOGICAL_H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener("resize",resize,{passive:true});addEventListener("orientationchange",()=>setTimeout(resize,80));resize();
+function beep(freq=220,dur=.05,type="sine",vol=.025){try{if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+dur);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur)}catch(e){}}
+function sndSword(){beep(180,.045,"sawtooth",.026);setTimeout(()=>beep(350,.035,"triangle",.018),28)}
+function sndHit(){beep(92,.065,"square",.022)}
+function sndPickup(){beep(660,.06,"triangle",.02);setTimeout(()=>beep(880,.08,"triangle",.018),45)}
+function sndWin(){[392,523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.17,"triangle",.035),i*120))}
+function showToast(t){toast.textContent=t;toast.style.opacity="1";toast.style.transform="translateX(-50%) translateY(0)";setTimeout(()=>{toast.style.opacity="0";toast.style.transform="translateX(-50%) translateY(-8px)"},1800)}
+class Actor{
+ constructor(x,y,type){this.x=x;this.y=y;this.vx=0;this.vy=0;this.type=type;this.r=26;this.facing=1;this.cool=0;this.hurt=0;this.dead=false;this.attackAnim=0;this.specialAnim=0;this.dashCool=0;this.inv=0;this.stamina=100;this.maxStamina=100;this.boss=type==="boss";this.maxHp=type==="rose"?150:type==="rakan"?230:type==="boss"?260:44;this.hp=this.maxHp;this.speed=type==="rose"?275:type==="rakan"?220:type==="boss"?100:82;this.color=type==="rose"?"#e6538a":type==="rakan"?"#4b7dcc":type==="boss"?"#a71537":"#65475f"}
+ update(dt){if(this.cool>0)this.cool-=dt;if(this.hurt>0)this.hurt-=dt;if(this.attackAnim>0)this.attackAnim-=dt;if(this.specialAnim>0)this.specialAnim-=dt;if(this.inv>0)this.inv-=dt;if(this.dashCool>0)this.dashCool-=dt;if(this.type==="rose"){this.stamina=clamp(this.stamina+24*dt,0,100);updateRose(this,dt)}else if(this.type==="rakan")updateRakan(this,dt);else updateEnemy(this,dt);this.x=clamp(this.x,46,world.w-46);this.y=clamp(this.y,world.floorTop,world.floorBottom)}
+ damage(n,fromX){if(this.dead||this.inv>0||this.hurt>0)return;this.hp-=n;this.hurt=.22;this.vx+=(this.x-fromX>0?1:-1)*165;shake=Math.max(shake,this.boss?10:7);flash=.16;sndHit();burst(this.x,this.y-12,this.type==="enemy"||this.type==="boss"?"#ff9a70":"#ffd1df",this.boss?18:10);if(this.hp<=0){this.hp=0;this.dead=true;this.vx=(this.x-fromX>0?1:-1)*250;this.vy=-90;if(this.type==="enemy"||this.type==="boss"){score+=this.boss?1000:120;addCombo();burst(this.x,this.y,"#f6c35b",this.boss?34:19);if(Math.random()<.34&&!this.boss)pickups.push({x:this.x,y:this.y-15,life:10,type:Math.random()<.65?"heal":"score",bob:rand(0,6.28)})}}}
+ attack(power=1){if(this.dead||this.cool>0)return;this.cool=this.type==="rose"?.22:this.type==="rakan"?.42:.62;this.attackAnim=.18;sndSword();slashes.push({x:this.x+this.facing*34,y:this.y-13,life:.18,max:.18,dir:this.facing,type:this.type,power});const range=this.type==="rose"?98:92,dmg=this.type==="rose"?38*power:34;for(const e of entities){if((e.type==="enemy"||e.type==="boss")&&!e.dead&&Math.abs(e.y-this.y)<62&&Math.abs(e.x-(this.x+this.facing*38))<range){if(Math.sign(e.x-this.x)===this.facing||Math.abs(e.x-this.x)<34)e.damage(dmg,this.x)}}}
+}
+function updateRose(a,dt){let dx=0,dy=0;if(keys.ArrowLeft||keys.a)dx--;if(keys.ArrowRight||keys.d)dx++;if(keys.ArrowUp||keys.w)dy--;if(keys.ArrowDown||keys.s)dy++;if(touch.active){dx+=touch.x;dy+=touch.y}if(dx||dy){const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;a.vx=dx*a.speed;a.vy=dy*a.speed;if(Math.abs(dx)>.12)a.facing=dx>0?1:-1}else{a.vx*=.76;a.vy*=.76}a.x+=a.vx*dt;a.y+=a.vy*dt}
+function updateRakan(a,dt){if(a.dead)return;const alive=entities.filter(e=>(e.type==="enemy"||e.type==="boss")&&!e.dead);if(!alive.length){const d=dist(a,rose);if(d>120){const ang=Math.atan2(rose.y-a.y,rose.x-a.x);a.vx=Math.cos(ang)*a.speed*.7;a.vy=Math.sin(ang)*a.speed*.7}else{a.vx*=.7;a.vy*=.7}a.x+=a.vx*dt;a.y+=a.vy*dt;return}let t=alive[0],best=1e9;for(const e of alive){const d=dist(a,e);if(d<best){best=d;t=e}}if(best>74){const ang=Math.atan2(t.y-a.y,t.x-a.x);a.vx=Math.cos(ang)*a.speed;a.vy=Math.sin(ang)*a.speed;a.facing=a.vx>=0?1:-1}else{a.vx*=.5;a.vy*=.5;a.attack()}a.x+=a.vx*dt;a.y+=a.vy*dt}
+function updateEnemy(a,dt){if(a.dead){a.vy+=420*dt;a.x+=a.vx*dt;a.y+=a.vy*dt;return}const targets=[rose,rakan].filter(q=>q&&!q.dead);if(!targets.length)return;let t=targets[0],best=1e9;for(const q of targets){const d=dist(a,q);if(d<best){best=d;t=q}}const stop=a.boss?82:56;if(best>stop){const ang=Math.atan2(t.y-a.y,t.x-a.x);a.vx=Math.cos(ang)*a.speed;a.vy=Math.sin(ang)*a.speed;a.facing=a.vx>=0?1:-1}else{a.vx*=.52;a.vy*=.52;if(a.cool<=0){a.cool=a.boss?rand(.55,.82):rand(.8,1.15);a.attackAnim=.19;slashes.push({x:a.x+a.facing*28,y:a.y-8,life:.16,max:.16,dir:a.facing,type:a.type,power:1});if(best<(a.boss?92:66))t.damage(a.boss?12:7,a.x)}}if(a.boss&&best<180&&Math.random()<dt*.28){a.vx*=2.2;a.vy*=2.2}a.x+=a.vx*dt;a.y+=a.vy*dt}
+function addCombo(){combo++;comboTimer=2.3;if(combo>1){comboEl.textContent=`×${combo} COMBO`;comboEl.style.opacity="1";comboEl.style.transform="scale(1)";score+=combo*12}}
+function dash(){if(state!=="play"||!rose||rose.dead||rose.dashCool>0||rose.stamina<35)return;let dx=0,dy=0;if(keys.ArrowLeft||keys.a)dx--;if(keys.ArrowRight||keys.d)dx++;if(keys.ArrowUp||keys.w)dy--;if(keys.ArrowDown||keys.s)dy++;if(touch.active){dx+=touch.x;dy+=touch.y}if(!dx&&!dy)dx=rose.facing;const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;rose.x+=dx*150;rose.y+=dy*85;rose.stamina-=35;rose.dashCool=.5;rose.inv=.22;burst(rose.x,rose.y,"#9bdcff",14);beep(135,.06,"triangle",.022)}
+function special(){if(state!=="play"||!rose||rose.dead||rose.stamina<70)return;rose.stamina-=70;rose.specialAnim=.45;rose.inv=.35;shake=11;beep(420,.08,"triangle",.035);setTimeout(()=>beep(620,.12,"sine",.028),60);for(const e of entities){if((e.type==="enemy"||e.type==="boss")&&!e.dead&&dist(rose,e)<190)e.damage(e.boss?48:70,rose.x)}for(let i=0;i<26;i++){const a=i/26*Math.PI*2,rr=rand(40,175);particles.push({x:rose.x+Math.cos(a)*rr,y:rose.y+Math.sin(a)*rr*.45,vx:Math.cos(a)*rand(70,190),vy:Math.sin(a)*rand(25,100)-35,life:rand(.35,.75),max:.75,c:i%2?"#ffe39a":"#ef5a8d",size:rand(3,7)})}showToast("الضربة الملكية!")}
+function burst(x,y,c,n=8){for(let i=0;i<n;i++)particles.push({x,y,vx:rand(-170,170),vy:rand(-190,30),life:rand(.3,.75),max:.75,c,size:rand(2,7)})}
+function startGame(){overlay.style.display="none";if(audioCtx?.state==="suspended")audioCtx.resume();entities=[];particles=[];slashes=[];petals=[];pickups=[];score=0;combo=0;camera.x=0;wave=0;rose=new Actor(440,530,"rose");rakan=new Actor(650,530,"rakan");state="cutscene";chapterBox.textContent="الفصل الأول — إنذار في القصر";showDialogue([["الراوي","استيقظ القصر على أصوات تحطم الأبواب وصليل السيوف."],["رورو","هذا ليس تدريبًا للحرس… هناك غرباء في الداخل!"],["راكان","أميرتي رورو، الممر الشرقي اخترقوه. علينا التحرك الآن."],["رورو","إذن نقاتل سويًا. القصر لن يسقط الليلة."],["راكان","وأنا لن أتركك وحدك خطوة واحدة."]],()=>beginWave(1))}
+function beginWave(n){state="play";wave=n;entities=[rose,rakan];const counts=[4,5,4],count=counts[n-1]||4;if(n<3){for(let i=0;i<count;i++){const side=i%2?1:-1;const e=new Actor(side>0?rand(1000,1900):rand(110,320),rand(430,615),"enemy");e.maxHp=e.hp=n===2?48:40;e.speed+=n*8;entities.push(e)}chapterBox.textContent=`المواجهة ${n} / 3`;showToast(n===1?"ابدئي الهجوم!":n===2?"الموجة الثانية أقوى!":"") }else{for(let i=0;i<4;i++){const e=new Actor(rand(980,1700),rand(430,610),"enemy");e.maxHp=e.hp=52;e.speed=100;entities.push(e)}const boss=new Actor(1850,520,"boss");entities.push(boss);bossWrap.style.display="block";chapterBox.textContent="المواجهة الأخيرة — قائد الغزاة";showToast("احذري… القائد وصل!")}}
+function nextWaveOrEnding(){if(wave<3){state="cutscene";const text=wave===1?[["راكان","قتالكِ اليوم أخطر من أي درس سيوف."],["رورو","ركز يا راكان، ما زال عندنا ضيوف غير مرغوب فيهم."],["راكان","أوامرك يا أميرتي."]]:[["رورو","انتهوا… لكني أسمع خطوات أثقل."],["راكان","قائدهم قادم. هذه آخر جولة."],["رورو","ممتاز. نوفر عليه عناء البحث عنا."]];showDialogue(text,()=>beginWave(wave+1))}else ending()}
+function ending(){state="ending";bossWrap.style.display="none";entities=entities.filter(e=>e.type!=="enemy"&&e.type!=="boss");rose.x=1040;rose.y=520;rakan.x=1160;rakan.y=520;camera.x=640;sndWin();for(let i=0;i<105;i++)petals.push({x:rand(0,LOGICAL_W),y:rand(-LOGICAL_H,0),vy:rand(24,70),vx:rand(-22,22),rot:rand(0,6.28),vr:rand(-1.4,1.4)});setTimeout(()=>showDialogue([["الراوي","عاد الهدوء إلى القصر، وسقط آخر سيف مع أول خيط من ضوء الصباح."],["رورو","انتهى الأمر… القصر بخير."],["راكان","والأهم أنكِ بخير."]],kneelScene),550)}
+function kneelScene(){state="kneel";setTimeout(()=>showDialogue([["راكان","رورو… وسط كل هذه الفوضى اكتشفت شيئًا واحدًا لا أحتاج فيه إلى أي شجاعة لأقوله."],["راكان","أجمل ما فيك ليس التاج، بل قلبك الذي يقاتل من أجل من تحبين."],["راكان","ولو خُيّرت بين ألف قصر ومملكة… لاخترت المكان الذي تكونين فيه."],["راكان","كل عام وأنتِ بخير يا أجمل أميرة في الكون. 🌹"],["رورو","وردة واحدة بعد كل هذه المعركة؟"],["راكان","كنت سأحضر باقة… لكنكِ جعلتِ كل الغزاة يأتون في نفس الليلة."],["رورو","مقبولة… لكن الباقة القادمة محسوبة عليك."]],showFinal),700)}
+function showFinal(){state="final";overlay.style.display="grid";menuCard.innerHTML=`<div class="crown">🌹✨</div><h1 style="font-size:clamp(34px,6vw,64px)">كل عام وأنتِ بخير يا <span class="gold">رورو</span></h1><div class="lead">أنقذتِ القصر، هزمتِ قائد الغزاة، وكسبتِ وردة الفارس راكان.<br><span style="color:#ffd778;font-weight:800">النتيجة: ${score} ✦ — النهاية السعيدة</span></div><button class="mainBtn" id="againBtn">العب من جديد</button><div id="credits">ROYAL POCKET — RORO × RAKAN</div>`;setTimeout(()=>document.getElementById("againBtn")?.addEventListener("click",()=>location.reload()),0)}
+function gameOver(reason){state="gameover";bossWrap.style.display="none";overlay.style.display="grid";menuCard.innerHTML=`<div class="crown">⚔️</div><h1 style="font-size:clamp(34px,6vw,60px)">انتهت المعركة</h1><div class="lead">${reason}<br>لكن الحكاية لم تنتهِ بعد.</div><button class="mainBtn" id="retryBtn">إعادة المحاولة</button>`;setTimeout(()=>document.getElementById("retryBtn")?.addEventListener("click",()=>location.reload()),0)}
+function showDialogue(lines,done){dialogueQueue=[...lines];onDialogueDone=done||null;dialogue.style.display="block";dialogueLocked=true;nextDialogue()}
+function nextDialogue(){if(dialogueQueue.length===0){dialogue.style.display="none";dialogueLocked=false;const fn=onDialogueDone;onDialogueDone=null;if(fn)fn();return}const d=dialogueQueue.shift();speaker.textContent=d[0];line.textContent=d[1];beep(270,.022,"sine",.009)}
+dialogue.addEventListener("pointerdown",e=>{e.preventDefault();nextDialogue()});
+function update(dt){time+=dt;if(freeze>0){freeze-=dt;return}if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0){combo=0;comboEl.style.opacity="0";comboEl.style.transform="scale(.8)"}}for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=265*dt;p.life-=dt}particles=particles.filter(p=>p.life>0);for(const s of slashes)s.life-=dt;slashes=slashes.filter(s=>s.life>0);for(const p of petals){p.y+=p.vy*dt;p.x+=p.vx*dt;p.rot+=p.vr*dt;if(p.y>LOGICAL_H+25){p.y=-25;p.x=rand(0,LOGICAL_W)}}for(const q of pickups){q.life-=dt;q.bob+=dt*3;if(rose&&dist(rose,q)<50){if(q.type==="heal")rose.hp=clamp(rose.hp+28,0,rose.maxHp);else score+=250;q.life=0;sndPickup();showToast(q.type==="heal"?"+ صحة":"+ 250 نقطة")}}pickups=pickups.filter(q=>q.life>0);if(state==="play"){for(const e of entities)e.update(dt);entities=entities.filter(e=>!((e.type==="enemy"||e.type==="boss")&&e.dead&&e.y>710));const alive=entities.filter(e=>(e.type==="enemy"||e.type==="boss")&&!e.dead);hpFill.style.width=`${rose.hp/rose.maxHp*100}%`;allyFill.style.width=`${rakan.hp/rakan.maxHp*100}%`;staminaFill.style.width=`${rose.stamina/rose.maxStamina*100}%`;scoreEl.textContent=`${score} ✦`;const boss=entities.find(e=>e.type==="boss"&&!e.dead);if(boss){bossWrap.style.display="block";bossFill.style.width=`${boss.hp/boss.maxHp*100}%`}else if(wave===3)bossWrap.style.display="none";if(rose.dead){gameOver("سقطت الأميرة رورو في المعركة");return}if(rakan.dead){gameOver("سقط الفارس راكان في المعركة");return}if(alive.length===0&&!dialogueLocked)nextWaveOrEnding();camera.x+=((rose.x-LOGICAL_W*.46)-camera.x)*Math.min(1,dt*5);camera.x=clamp(camera.x,0,world.w-LOGICAL_W)}else if(state==="ending"||state==="kneel"){camera.x+=((950-LOGICAL_W*.44)-camera.x)*Math.min(1,dt*2.3)}shake*=.83;flash*=.82}
+function draw(){ctx.save();const sx=shake?rand(-shake,shake):0,sy=shake?rand(-shake,shake):0;ctx.translate(sx,sy);drawCastle();ctx.translate(-camera.x,0);drawFloor();for(const q of pickups)drawPickup(q);const sorted=[...entities].sort((a,b)=>a.y-b.y);for(const e of sorted)drawCharacter(e);for(const s of slashes)drawSlash(s);for(const p of particles)drawParticle(p);if(state==="kneel")drawKneel();ctx.restore();drawVignette();for(const p of petals)drawPetal(p);if(flash>0){ctx.fillStyle=`rgba(255,235,210,${flash*.24})`;ctx.fillRect(0,0,LOGICAL_W,LOGICAL_H)}}
+function drawCastle(){const g=ctx.createLinearGradient(0,0,0,LOGICAL_H);g.addColorStop(0,"#120b29");g.addColorStop(.48,"#2f2148");g.addColorStop(1,"#654044");ctx.fillStyle=g;ctx.fillRect(0,0,LOGICAL_W,LOGICAL_H);ctx.fillStyle="rgba(255,220,155,.035)";for(let i=0;i<34;i++){const x=(i*173+time*7)%1500-100,y=(i*83)%340+20;ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}const par=-camera.x*.16;ctx.save();ctx.translate(par,0);for(let x=-140;x<LOGICAL_W+700;x+=330){ctx.fillStyle="#201738";ctx.beginPath();ctx.roundRect(x,86,180,272,90);ctx.fill();const wg=ctx.createLinearGradient(0,100,0,340);wg.addColorStop(0,"#7e68b9");wg.addColorStop(.55,"#d78c8e");wg.addColorStop(1,"#f1c57d");ctx.fillStyle=wg;ctx.beginPath();ctx.roundRect(x+17,109,146,220,74);ctx.fill();ctx.strokeStyle="#51396b";ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x+90,112);ctx.lineTo(x+90,329);ctx.moveTo(x+22,235);ctx.lineTo(x+158,235);ctx.stroke()}ctx.restore();ctx.save();ctx.translate(-camera.x*.34,0);for(let x=-70;x<LOGICAL_W+900;x+=430){ctx.fillStyle="#352541";ctx.fillRect(x,42,92,405);ctx.fillStyle="#594066";ctx.fillRect(x-17,50,126,28);ctx.fillRect(x-22,412,136,38);ctx.fillStyle="rgba(255,255,255,.055)";ctx.fillRect(x+14,74,12,320)}ctx.restore();ctx.save();ctx.translate(-camera.x*.22,0);for(let x=170;x<LOGICAL_W+800;x+=510){ctx.fillStyle="#7b2447";ctx.beginPath();ctx.moveTo(x,52);ctx.lineTo(x+95,52);ctx.lineTo(x+95,255);ctx.lineTo(x+47,223);ctx.lineTo(x,255);ctx.closePath();ctx.fill();ctx.strokeStyle="#e0b75c";ctx.lineWidth=4;ctx.stroke();ctx.fillStyle="#ffd46f";ctx.font="46px serif";ctx.textAlign="center";ctx.fillText("♛",x+47,151)}ctx.restore()}
+function drawFloor(){ctx.fillStyle="#2e1e31";ctx.fillRect(camera.x,354,LOGICAL_W+140,366);for(let x=Math.floor(camera.x/100)*100;x<camera.x+LOGICAL_W+110;x+=100){ctx.strokeStyle="rgba(255,255,255,.04)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,354);ctx.lineTo(x-72,720);ctx.stroke()}for(let y=420;y<720;y+=55){ctx.strokeStyle="rgba(0,0,0,.14)";ctx.beginPath();ctx.moveTo(camera.x,y);ctx.lineTo(camera.x+LOGICAL_W,y);ctx.stroke()}ctx.fillStyle="#6d2140";ctx.fillRect(camera.x,586,LOGICAL_W+140,101);ctx.fillStyle="#d9aa55";ctx.fillRect(camera.x,591,LOGICAL_W+140,5);ctx.fillRect(camera.x,678,LOGICAL_W+140,5);for(let x=250;x<world.w;x+=510){ctx.fillStyle="#654831";ctx.fillRect(x,292,11,105);const rg=ctx.createRadialGradient(x+5,274,3,x+5,274,48);rg.addColorStop(0,"#fff4b3");rg.addColorStop(.25,"#ffb23a");rg.addColorStop(1,"rgba(255,100,20,0)");ctx.fillStyle=rg;ctx.beginPath();ctx.arc(x+5,274+Math.sin(time*8+x)*3,48,0,Math.PI*2);ctx.fill()}}
+function drawCharacter(a){ctx.save();ctx.translate(a.x,a.y);if(a.dead){ctx.rotate(a.facing*.92);ctx.globalAlpha=.65}if(a.hurt>0&&Math.floor(a.hurt*32)%2===0)ctx.globalAlpha=.45;ctx.fillStyle="rgba(0,0,0,.28)";ctx.beginPath();ctx.ellipse(0,25,a.boss?39:31,a.boss?14:11,0,0,Math.PI*2);ctx.fill();if(a.type==="rose"){ctx.fillStyle="#541d5a";ctx.beginPath();ctx.moveTo(-14,-27);ctx.lineTo(-34,18);ctx.lineTo(-8,14);ctx.closePath();ctx.fill();ctx.fillStyle="#81234e";ctx.beginPath();ctx.moveTo(-19,-26);ctx.lineTo(-29,24);ctx.lineTo(29,24);ctx.lineTo(18,-26);ctx.closePath();ctx.fill();ctx.fillStyle="#e5548b";ctx.beginPath();ctx.roundRect(-16,-36,32,34,7);ctx.fill();ctx.fillStyle="#f0c66a";ctx.fillRect(-19,-10,38,5);ctx.fillStyle="#f0c1ac";ctx.beginPath();ctx.arc(0,-52,15,0,Math.PI*2);ctx.fill();ctx.fillStyle="#6b2a24";ctx.beginPath();ctx.arc(-3,-58,16,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(-18,-57,8,29);ctx.fillStyle="#ffd76f";ctx.beginPath();ctx.moveTo(-12,-70);ctx.lineTo(-7,-82);ctx.lineTo(0,-72);ctx.lineTo(7,-83);ctx.lineTo(13,-70);ctx.closePath();ctx.fill();if(a.specialAnim>0){ctx.strokeStyle=`rgba(255,220,120,${a.specialAnim*1.8})`;ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,-8,80*(1-a.specialAnim)+45,0,Math.PI*2);ctx.stroke()}drawSword(15*a.facing,-8,a.facing,a.attackAnim)}else if(a.type==="rakan"){ctx.fillStyle="#263b68";ctx.beginPath();ctx.roundRect(-18,-35,36,58,9);ctx.fill();ctx.fillStyle="#5688d4";ctx.fillRect(-14,-30,28,39);ctx.fillStyle="#e0b75f";ctx.fillRect(-20,-4,40,5);ctx.fillStyle="#dab39d";ctx.beginPath();ctx.arc(0,-51,15,0,Math.PI*2);ctx.fill();ctx.fillStyle="#201927";ctx.beginPath();ctx.arc(0,-58,15,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle="#bfc9d4";ctx.fillRect(-24,-31,10,13);ctx.fillRect(14,-31,10,13);drawSword(17*a.facing,-8,a.facing,a.attackAnim)}else if(a.type==="boss"){ctx.scale(1.22,1.22);ctx.fillStyle="#401a28";ctx.beginPath();ctx.roundRect(-24,-38,48,64,11);ctx.fill();ctx.fillStyle="#aa183d";ctx.fillRect(-18,-33,36,38);ctx.fillStyle="#e4b64f";ctx.fillRect(-23,-3,46,6);ctx.fillStyle="#c99782";ctx.beginPath();ctx.arc(0,-56,17,0,Math.PI*2);ctx.fill();ctx.fillStyle="#18131a";ctx.fillRect(-18,-65,36,11);ctx.fillStyle="#2b1a22";ctx.fillRect(-15,-58,30,9);drawSword(20*a.facing,-6,a.facing,a.attackAnim,true)}else{ctx.fillStyle="#352b39";ctx.beginPath();ctx.roundRect(-18,-31,36,52,8);ctx.fill();ctx.fillStyle=a.color;ctx.fillRect(-13,-27,26,26);ctx.fillStyle="#c99d87";ctx.beginPath();ctx.arc(0,-47,13,0,Math.PI*2);ctx.fill();ctx.fillStyle="#19151b";ctx.fillRect(-14,-57,28,9);ctx.fillStyle="#291e2a";ctx.fillRect(-12,-50,24,8);drawSword(15*a.facing,-4,a.facing,a.attackAnim,true)}ctx.restore()}
+function drawSword(x,y,dir,anim,rough=false){ctx.save();ctx.translate(x,y);ctx.scale(dir,1);ctx.rotate(anim>0?-.98:.14);ctx.strokeStyle=rough?"#b2b5ba":"#edf7ff";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(40,-27);ctx.stroke();ctx.strokeStyle="#e2aa55";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-3,1);ctx.lineTo(8,-8);ctx.stroke();ctx.restore()}
+function drawSlash(s){ctx.save();ctx.translate(s.x,s.y);ctx.scale(s.dir,1);ctx.globalAlpha=clamp(s.life/s.max,0,1);ctx.strokeStyle=s.type==="enemy"||s.type==="boss"?"#ff747d":"#ffe7a0";ctx.lineWidth=s.power>1?8:5;ctx.beginPath();ctx.arc(0,0,s.power>1?58:50,-1.18,1.05);ctx.stroke();ctx.restore()}
+function drawParticle(p){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
+function drawPetal(p){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle="rgba(241,80,135,.82)";ctx.beginPath();ctx.ellipse(0,0,5,9,.3,0,Math.PI*2);ctx.fill();ctx.restore()}
+function drawPickup(q){const y=q.y+Math.sin(q.bob)*7;ctx.save();ctx.translate(q.x,y);ctx.fillStyle=q.type==="heal"?"#ff6a91":"#ffd263";ctx.shadowBlur=20;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="bold 12px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(q.type==="heal"?"+":"★",0,1);ctx.restore()}
+function drawKneel(){if(!rakan)return;ctx.save();ctx.translate(rakan.x,rakan.y);ctx.fillStyle="#d83e69";ctx.beginPath();ctx.arc(-27,-38,7,0,Math.PI*2);ctx.fill();ctx.fillStyle="#8dca6e";ctx.fillRect(-29,-33,3,30);ctx.restore()}
+function drawVignette(){const g=ctx.createRadialGradient(LOGICAL_W/2,LOGICAL_H/2,180,LOGICAL_W/2,LOGICAL_H/2,760);g.addColorStop(.45,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.52)");ctx.fillStyle=g;ctx.fillRect(0,0,LOGICAL_W,LOGICAL_H)}
+function loop(t){const dt=Math.min(.033,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(loop)}
+addEventListener("keydown",e=>{keys[e.key]=true;if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key))e.preventDefault();if(e.key===" "&&state==="play"&&!dialogueLocked)rose.attack();if(e.key==="Shift")dash();if((e.key==="e"||e.key==="E")&&state==="play"&&!dialogueLocked)special()});addEventListener("keyup",e=>keys[e.key]=false);
+const joy=document.getElementById("joystick"),stick=document.getElementById("stick");let joyId=null;function updateJoy(e){const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.31,l=Math.hypot(dx,dy)||1,n=Math.min(max,l),nx=dx/l*n,ny=dy/l*n;stick.style.transform=`translate(calc(-50% + ${nx}px),calc(-50% + ${ny}px))`;touch.x=clamp(dx/max,-1,1);touch.y=clamp(dy/max,-1,1);touch.active=true}joy.addEventListener("pointerdown",e=>{e.preventDefault();joyId=e.pointerId;joy.setPointerCapture?.(joyId);updateJoy(e)});joy.addEventListener("pointermove",e=>{if(e.pointerId===joyId)updateJoy(e)});function endJoy(e){if(joyId!==null&&(e.pointerId===joyId||e.type==="pointercancel")){joyId=null;touch.active=false;touch.x=touch.y=0;stick.style.transform="translate(-50%,-50%)"}}joy.addEventListener("pointerup",endJoy);joy.addEventListener("pointercancel",endJoy);
+document.getElementById("attackBtn").addEventListener("pointerdown",e=>{e.preventDefault();if(state==="play"&&!dialogueLocked)rose.attack()});document.getElementById("dashBtn").addEventListener("pointerdown",e=>{e.preventDefault();dash()});document.getElementById("specialBtn").addEventListener("pointerdown",e=>{e.preventDefault();special()});canvas.addEventListener("pointerdown",()=>{if(state==="play"&&!dialogueLocked&&!matchMedia("(pointer:coarse)").matches)rose.attack()});startBtn.addEventListener("click",startGame);requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
